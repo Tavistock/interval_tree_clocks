@@ -174,3 +174,16 @@ class master_to_replicas(unittest.TestCase):
     # ?assert(smaller(MasterD0, MasterA1))
     # ?assert(smaller(MasterD0, MasterB3))
     # ?assert(smaller(MasterD0, MasterC2)).
+
+class PrivateMethodsTests(unittest.TestCase):
+
+    def test_normal_event_form(self):
+        self.assertTrue(itc.normal_event((2,1,1))==3)
+        self.assertTrue(itc.normal_event((2,(2,1,0),3))==(4,(0,1,0),1))
+
+    def test_split(self):
+        self.assertTrue(itc.split(0)==(0,0))
+        self.assertTrue(itc.split(1)==((1,0),(0,1)))
+        self.assertTrue(itc.split((0,1))==((0,(1,0)),(0,(0,1))))
+        self.assertTrue(itc.split((1,0))==(((1,0),0),((0,1),0)))
+        self.assertTrue(itc.split((1,1))==((1,0),(0,1)))

@@ -9,8 +9,10 @@
 #           | (__| | (_) | (__|   <\__ \
 #            \___|_|\___/ \___|_|\_\___/
 
-from .interval_tree_clocks import (
-    explode, rebuild,
-    seed, join, fork, event,
-    leq, peek
-    )
+# from .interval_tree_clocks import (
+#     explode, rebuild,
+#     seed, join, fork, event,
+#     leq, peek
+#     )
+
+from .interval_tree_clocks import *
