@@ -15,7 +15,7 @@ def clash(a, b):
     return not equal(a, b) and not smaller(a, b) and not larger(a, b)
 
 def add_events(num, clock):
-    reduce(lambda x, y: itc.event(x), xrange(num), clock)
+    return reduce(lambda x, y: itc.event(x), xrange(num), clock)
 
 class demo(unittest.TestCase):
 
@@ -137,43 +137,44 @@ class master_to_replicas(unittest.TestCase):
         self.assertFalse(smaller(self.Master3, self.ReplicaB1))
         self.assertFalse(larger(self.Master3, self.ReplicaB1))
 
-# class MasterToMaster(unittest.TestCase):
-    #  # 3 cluster: 1 master, two replicas (A,B)
-    # {MasterTmp, MasterB0} = itc.fork(itc.seed())
-    # {MasterB1, MasterC0} = itc.fork(MasterB0)
-    # {MasterA0, MasterD0} = itc.fork(MasterTmp)
-    # MasterA1 = add_events(3, MasterA0)
-    # MasterB2 = add_events(2, MasterB1)
-    # MasterC1 = add_events(1, MasterC0)
-    # MasterB3 = itc.join(MasterB2, itc.peek(MasterC1))
-    # MasterC2 = itc.join(MasterC1, itc.peek(MasterB2))
+class MasterToMaster(unittest.TestCase):
+    def testm2m(self):
+        # 3 cluster: 1 master, two replicas (A,B)
+        MasterTmp, MasterB0 = itc.fork(itc.seed())
+        MasterB1, MasterC0 = itc.fork(MasterB0)
+        MasterA0, MasterD0 = itc.fork(MasterTmp)
+        MasterA1 = add_events(3, MasterA0)
+        MasterB2 = add_events(2, MasterB1)
+        MasterC1 = add_events(1, MasterC0)
+        MasterB3 = itc.join(MasterB2, itc.peek(MasterC1))
+        MasterC2 = itc.join(MasterC1, itc.peek(MasterB2))
 
-    #  # Concurrent entries can't work, get invalid
-    # ?assert(clash(MasterA1, MasterB2))
-    # ?assert(clash(MasterB2, MasterC1))
+         # Concurrent entries can't work, get invalid
+        self.assertTrue(clash(MasterA1, MasterB2))
+        self.assertTrue(clash(MasterB2, MasterC1))
 
-    # # Merges from peek / join work, and supercede the previous values
-    # ?assert(smaller(MasterC1
-    #                 itc.join(MasterC1, itc.peek(MasterB2))))
-    # ?assert(smaller(MasterC1, itc.join(MasterC1, MasterB2)))
-    # ?assert(smaller(MasterC1
-    #                 itc.join(MasterC1, itc.peek(MasterA1))))
-    # ?assert(smaller(MasterC1, itc.join(MasterC1, MasterA1)))
-    # ?assert(smaller(MasterB2
-    #                 itc.join(MasterC1, itc.peek(MasterB2))))
-    # ?assert(smaller(MasterB2, itc.join(MasterC1, MasterB2)))
-    # ?assert(smaller(MasterA1
-    #                 itc.join(MasterC1, itc.peek(MasterA1))))
-    # ?assert(smaller(MasterA1, itc.join(MasterC1, MasterA1)))
+        # Merges from peek / join work, and supercede the previous values
+        self.assertTrue(smaller(MasterC1,
+                        itc.join(MasterC1, itc.peek(MasterB2))))
+        self.assertTrue(smaller(MasterC1, itc.join(MasterC1, MasterB2)))
+        self.assertTrue(smaller(MasterC1,
+                        itc.join(MasterC1, itc.peek(MasterA1))))
+        self.assertTrue(smaller(MasterC1, itc.join(MasterC1, MasterA1)))
+        self.assertTrue(smaller(MasterB2,
+                        itc.join(MasterC1, itc.peek(MasterB2))))
+        self.assertTrue(smaller(MasterB2, itc.join(MasterC1, MasterB2)))
+        self.assertTrue(smaller(MasterA1,
+                        itc.join(MasterC1, itc.peek(MasterA1))))
+        self.assertTrue(smaller(MasterA1, itc.join(MasterC1, MasterA1)))
 
-    # # Both merged entries are equal to each other, and still clash
-    # # with conflicting ones, but are bigger than sane ones.
-    # ?assert(equal(MasterB3, MasterC2))
-    # ?assert(clash(MasterA1, MasterB3))
-    # ?assert(clash(MasterA1, MasterC2))
-    # ?assert(smaller(MasterD0, MasterA1))
-    # ?assert(smaller(MasterD0, MasterB3))
-    # ?assert(smaller(MasterD0, MasterC2)).
+        # Both merged entries are equal to each other, and still clash
+        # with conflicting ones, but are bigger than sane ones.
+        self.assertTrue(equal(MasterB3, MasterC2))
+        self.assertTrue(clash(MasterA1, MasterB3))
+        self.assertTrue(clash(MasterA1, MasterC2))
+        self.assertTrue(smaller(MasterD0, MasterA1))
+        self.assertTrue(smaller(MasterD0, MasterB3))
+        self.assertTrue(smaller(MasterD0, MasterC2))
 
 class PrivateMethodsTests(unittest.TestCase):
 
